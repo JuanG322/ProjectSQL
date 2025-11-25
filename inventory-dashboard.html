@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventario</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #34495e;
+        }
+
+        .sidebar ul li.active {
+            background-color: #3498db;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* Tables */
+        .table-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            background-color: #34495e;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .actions button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        /* Alert for low stock */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+        }
+
+        /* Hide/Show forms */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Inventario</h2>
+            <ul>
+                <li class="menu-item active" data-section="productos">📦 Productos</li>
+                <li class="menu-item" data-section="ventas">💰 Ventas</li>
+                <li class="menu-item" data-section="clientes">👥 Clientes</li>
+                <li class="menu-item" data-section="proveedores">🏢 Proveedores</li>
+                <li class="menu-item" data-section="inventario">📊 Inventario</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- PRODUCTOS -->
+            <section id="productos" class="section active">
+                <h1>Gestión de Productos</h1>
+                
+                <div class="form-container">
+                    <h3>Agregar Nuevo Producto</h3>
+                    <form id="formProducto">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre:</label>
+                                <input type="text" id="prod_nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo:</label>
+                                <select id="prod_tipo" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">Chaqueta</option>
+                                    <option value="2">Pantalón</option>
+                                    <option value="3">Camiseta</option>
+                                    <option value="4">Zapato</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Talla:</label>
+                                <select id="prod_talla" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">XS</option>
+                                    <option value="2">S</option>
+                                    <option value="3">M</option>
+                                    <option value="4">L</option>
+                                    <option value="5">XL</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Color:</label>
+                                <select id="prod_color" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">Negro</option>
+                                    <option value="2">Blanco</option>
+                                    <option value="3">Azul</option>
+                                    <option value="4">Rojo</option>
+                                    <option value="5">Verde</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Precio:</label>
+                                <input type="number" id="prod_precio" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cantidad Inicial:</label>
+                                <input type="number" id="prod_cantidad" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Agregar Producto</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <h3>Lista de Productos</h3>
+                    <table id="tablaProductos">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Talla</th>
+                                <th>Color</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VENTAS -->
+            <section id="ventas" class="section">
+                <h1>Registro de Ventas</h1>
+                
+                <div class="form-container">
+                    <h3>Nueva Venta</h3>
+                    <form id="formVenta">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Cliente:</label>
+                                <select id="venta_cliente" required>
+                                    <option value="">Seleccionar cliente...</option>
+                                    <!-- Se llenará dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Producto:</label>
+                                <select id="venta_producto" required>
+                                    <option value="">Seleccionar producto...</option>
+                                    <!-- Se llenará dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Cantidad:</label>
+                                <input type="number" id="venta_cantidad" min="1" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Registrar Venta</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <h3>Historial de Ventas</h3>
+                    <table id="tablaVentas">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- CLIENTES -->
+            <section id="clientes" class="section">
+                <h1>Gestión de Clientes</h1>
+                
+                <div class="form-container">
+                    <h3>Agregar Nuevo Cliente</h3>
+                    <form id="formCliente">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre:</label>
+                                <input type="text" id="cliente_nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Dirección:</label>
+                                <input type="text" id="cliente_direccion" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono:</label>
+                                <input type="tel" id="cliente_telefono">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo:</label>
+                                <input type="email" id="cliente_correo">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Agregar Cliente</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <h3>Lista de Clientes</h3>
+                    <table id="tablaClientes">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Dirección</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PROVEEDORES -->
+            <section id="proveedores" class="section">
+                <h1>Gestión de Proveedores</h1>
+                
+                <div class="form-container">
+                    <h3>Agregar Nuevo Proveedor</h3>
+                    <form id="formProveedor">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre:</label>
+                                <input type="text" id="prov_nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono:</label>
+                                <input type="tel" id="prov_telefono" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Correo:</label>
+                                <input type="email" id="prov_correo" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Agregar Proveedor</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <h3>Lista de Proveedores</h3>
+                    <table id="tablaProveedores">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- INVENTARIO -->
+            <section id="inventario" class="section">
+                <h1>Estado del Inventario</h1>
+                
+                <div class="alert alert-warning">
+                    ⚠️ Productos con stock bajo (menos de 5 unidades)
+                </div>
+
+                <div class="table-container">
+                    <h3>Inventario Actual</h3>
+                    <table id="tablaInventario">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Talla</th>
+                                <th>Color</th>
+                                <th>Stock Disponible</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navegación entre secciones
+        const menuItems = document.querySelectorAll('.menu-item');
+        const sections = document.querySelectorAll('.section');
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Remover clase active de todos
+                menuItems.forEach(mi => mi.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+
+                // Agregar clase active al seleccionado
+                item.classList.add('active');
+                const sectionId = item.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Aquí irá la lógica de conexión con el backend
+        // Por ahora solo estructura básica de eventos
+
+        document.getElementById('formProducto').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Agregar producto');
+            // Aquí se conectará con la API
+        });
+
+        document.getElementById('formVenta').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Registrar venta');
+            // Aquí se conectará con la API
+        });
+
+        document.getElementById('formCliente').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Agregar cliente');
+            // Aquí se conectará con la API
+        });
+
+        document.getElementById('formProveedor').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Agregar proveedor');
+            // Aquí se conectará con la API
+        });
+    </script>
+</body>
+</html>
