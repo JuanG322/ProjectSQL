@@ -160,6 +160,22 @@
             gap: 15px;
         }
 
+        /* Filters */
+        .filters-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
         /* Tables */
         .table-container {
             background-color: white;
@@ -190,27 +206,27 @@
             background-color: #f8f9fa;
         }
 
-        .actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .actions button {
+        /* Status badges */
+        .badge {
             padding: 5px 10px;
+            border-radius: 12px;
             font-size: 12px;
+            font-weight: bold;
         }
 
-        /* Alert for low stock */
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+        .badge-bajo {
+            background-color: #e74c3c;
+            color: white;
         }
 
-        .alert-warning {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
+        .badge-medio {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .badge-suficiente {
+            background-color: #2ecc71;
+            color: white;
         }
 
         /* Hide/Show forms */
@@ -225,11 +241,11 @@
         <aside class="sidebar">
             <h2>Inventario</h2>
             <ul>
-                <li class="menu-item active" data-section="productos">📦 Productos</li>
-                <li class="menu-item" data-section="ventas">💰 Ventas</li>
-                <li class="menu-item" data-section="clientes">👥 Clientes</li>
-                <li class="menu-item" data-section="proveedores">🏢 Proveedores</li>
-                <li class="menu-item" data-section="inventario">📊 Inventario</li>
+                <li class="menu-item active" data-section="productos">Productos</li>
+                <li class="menu-item" data-section="ventas">Ventas</li>
+                <li class="menu-item" data-section="clientes">Clientes</li>
+                <li class="menu-item" data-section="proveedores">Proveedores</li>
+                <li class="menu-item" data-section="inventario">Inventario</li>
             </ul>
         </aside>
 
@@ -304,7 +320,6 @@
                                 <th>Color</th>
                                 <th>Precio</th>
                                 <th>Stock</th>
-                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -404,7 +419,6 @@
                                 <th>Dirección</th>
                                 <th>Teléfono</th>
                                 <th>Correo</th>
-                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -448,7 +462,6 @@
                                 <th>Nombre</th>
                                 <th>Teléfono</th>
                                 <th>Correo</th>
-                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -462,8 +475,49 @@
             <section id="inventario" class="section">
                 <h1>Estado del Inventario</h1>
                 
-                <div class="alert alert-warning">
-                    ⚠️ Productos con stock bajo (menos de 5 unidades)
+                <div class="filters-container">
+                    <h3>Filtrar Inventario</h3>
+                    <div class="filters-row">
+                        <div class="form-group">
+                            <label>Tipo:</label>
+                            <select id="filtro_tipo">
+                                <option value="">Todos</option>
+                                <option value="Chaqueta">Chaqueta</option>
+                                <option value="Pantalón">Pantalón</option>
+                                <option value="Camiseta">Camiseta</option>
+                                <option value="Zapato">Zapato</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Talla:</label>
+                            <select id="filtro_talla">
+                                <option value="">Todas</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Color:</label>
+                            <select id="filtro_color">
+                                <option value="">Todos</option>
+                                <option value="Negro">Negro</option>
+                                <option value="Blanco">Blanco</option>
+                                <option value="Azul">Azul</option>
+                                <option value="Rojo">Rojo</option>
+                                <option value="Verde">Verde</option>
+                                <option value="Gris">Gris</option>
+                                <option value="Amarillo">Amarillo</option>
+                                <option value="Café">Café</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="table-container">
@@ -506,6 +560,59 @@
                 document.getElementById(sectionId).classList.add('active');
             });
         });
+
+        // Variable global para almacenar datos de inventario
+        let inventarioCompleto = [];
+
+        // Función para aplicar filtros
+        function aplicarFiltros() {
+            const tipo = document.getElementById('filtro_tipo').value;
+            const talla = document.getElementById('filtro_talla').value;
+            const color = document.getElementById('filtro_color').value;
+
+            let datosFiltrados = inventarioCompleto;
+
+            if (tipo) {
+                datosFiltrados = datosFiltrados.filter(item => item.Tipo === tipo);
+            }
+            if (talla) {
+                datosFiltrados = datosFiltrados.filter(item => item.Talla === talla);
+            }
+            if (color) {
+                datosFiltrados = datosFiltrados.filter(item => item.Color === color);
+            }
+
+            mostrarInventario(datosFiltrados);
+        }
+
+        function mostrarInventario(datos) {
+            const tbody = document.querySelector('#tablaInventario tbody');
+            tbody.innerHTML = '';
+
+            datos.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                let estadoBadge = '';
+                if (item.Estado === 'Bajo') {
+                    estadoBadge = '<span class="badge badge-bajo">Bajo</span>';
+                } else if (item.Estado === 'Medio') {
+                    estadoBadge = '<span class="badge badge-medio">Medio</span>';
+                } else {
+                    estadoBadge = '<span class="badge badge-suficiente">Suficiente</span>';
+                }
+
+                tr.innerHTML = `
+                    <td>${item.ID_Producto}</td>
+                    <td>${item.Nombre}</td>
+                    <td>${item.Tipo}</td>
+                    <td>${item.Talla}</td>
+                    <td>${item.Color}</td>
+                    <td>${item.Cantidad_Stock}</td>
+                    <td>${estadoBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
         // Aquí irá la lógica de conexión con el backend
         // Por ahora solo estructura básica de eventos
