@@ -13,10 +13,10 @@ async function cargarProductos() {
     try {
         const response = await fetch(`${API_URL}/productos`);
         const productos = await response.json();
-        
+
         const tbody = document.querySelector('#tablaProductos tbody');
         tbody.innerHTML = '';
-        
+
         productos.forEach(producto => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -30,8 +30,8 @@ async function cargarProductos() {
             `;
             tbody.appendChild(tr);
         });
-        
-        // También actualizar el select de productos en ventas
+
+        // Tambien actualizar el select de productos en ventas
         cargarProductosSelect();
     } catch (error) {
         console.error('Error cargando productos:', error);
@@ -44,10 +44,10 @@ async function cargarClientes() {
     try {
         const response = await fetch(`${API_URL}/clientes`);
         const clientes = await response.json();
-        
+
         const tbody = document.querySelector('#tablaClientes tbody');
         tbody.innerHTML = '';
-        
+
         clientes.forEach(cliente => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -59,8 +59,8 @@ async function cargarClientes() {
             `;
             tbody.appendChild(tr);
         });
-        
-        // También actualizar el select de clientes en ventas
+
+        // Tambien actualizar el select de clientes en ventas
         cargarClientesSelect();
     } catch (error) {
         console.error('Error cargando clientes:', error);
@@ -73,10 +73,10 @@ async function cargarProveedores() {
     try {
         const response = await fetch(`${API_URL}/proveedores`);
         const proveedores = await response.json();
-        
+
         const tbody = document.querySelector('#tablaProveedores tbody');
         tbody.innerHTML = '';
-        
+
         proveedores.forEach(proveedor => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -98,10 +98,10 @@ async function cargarVentas() {
     try {
         const response = await fetch(`${API_URL}/ventas`);
         const ventas = await response.json();
-        
+
         const tbody = document.querySelector('#tablaVentas tbody');
         tbody.innerHTML = '';
-        
+
         ventas.forEach(venta => {
             const tr = document.createElement('tr');
             const fecha = new Date(venta.Fecha_Venta).toLocaleDateString();
@@ -126,7 +126,7 @@ async function cargarInventario() {
     try {
         const response = await fetch(`${API_URL}/inventario`);
         inventarioCompleto = await response.json();
-        
+
         mostrarInventario(inventarioCompleto);
     } catch (error) {
         console.error('Error cargando inventario:', error);
@@ -141,7 +141,7 @@ function mostrarInventario(datos) {
 
     datos.forEach(item => {
         const tr = document.createElement('tr');
-        
+
         let estadoBadge = '';
         if (item.Estado === 'Bajo') {
             estadoBadge = '<span class="badge badge-bajo">Bajo</span>';
@@ -165,7 +165,7 @@ function mostrarInventario(datos) {
 }
 
 // ============================================
-// CARGAR SELECTS DINÁMICAMENTE
+// CARGAR SELECTS DINAMICAMENTE
 // ============================================
 
 // Cargar clientes en el select de ventas
@@ -173,10 +173,10 @@ async function cargarClientesSelect() {
     try {
         const response = await fetch(`${API_URL}/clientes`);
         const clientes = await response.json();
-        
+
         const select = document.getElementById('venta_cliente');
         select.innerHTML = '<option value="">Seleccionar cliente...</option>';
-        
+
         clientes.forEach(cliente => {
             const option = document.createElement('option');
             option.value = cliente.ID_Cliente;
@@ -193,10 +193,10 @@ async function cargarProductosSelect() {
     try {
         const response = await fetch(`${API_URL}/productos`);
         const productos = await response.json();
-        
+
         const select = document.getElementById('venta_producto');
         select.innerHTML = '<option value="">Seleccionar producto...</option>';
-        
+
         productos.forEach(producto => {
             const option = document.createElement('option');
             option.value = producto.ID_Producto;
@@ -210,6 +210,26 @@ async function cargarProductosSelect() {
     }
 }
 
+// Cargar proveedores en el select de productos
+async function cargarProveedoresSelect() {
+    try {
+        const response = await fetch(`${API_URL}/proveedores`);
+        const proveedores = await response.json();
+
+        const select = document.getElementById('prod_proveedor');
+        select.innerHTML = '<option value="">Seleccionar proveedor...</option>';
+
+        proveedores.forEach(proveedor => {
+            const option = document.createElement('option');
+            option.value = proveedor.ID_Proveedor;
+            option.textContent = proveedor.Nombre;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error cargando proveedores para select:', error);
+    }
+}
+
 // ============================================
 // FUNCIONES PARA ENVIAR FORMULARIOS
 // ============================================
@@ -217,150 +237,152 @@ async function cargarProductosSelect() {
 // Agregar producto
 document.getElementById('formProducto').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const producto = {
         nombre: document.getElementById('prod_nombre').value,
         tipo: document.getElementById('prod_tipo').value,
         talla: document.getElementById('prod_talla').value,
         color: document.getElementById('prod_color').value,
         precio: document.getElementById('prod_precio').value,
-        cantidad: document.getElementById('prod_cantidad').value
+        cantidad: document.getElementById('prod_cantidad').value,
+        id_proveedor: document.getElementById('prod_proveedor').value
     };
-    
+
     try {
         const response = await fetch(`${API_URL}/productos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(producto)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
-            alert('✅ Producto agregado exitosamente');
+            alert('Producto agregado exitosamente');
             document.getElementById('formProducto').reset();
             cargarProductos();
             cargarInventario();
         } else {
-            alert('❌ Error: ' + result.error);
+            alert('Error: ' + result.error);
         }
     } catch (error) {
         console.error('Error agregando producto:', error);
-        alert('❌ Error al agregar producto');
+        alert('Error al agregar producto');
     }
 });
 
 // Agregar cliente
 document.getElementById('formCliente').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const cliente = {
         nombre: document.getElementById('cliente_nombre').value,
         direccion: document.getElementById('cliente_direccion').value,
         telefono: document.getElementById('cliente_telefono').value,
         correo: document.getElementById('cliente_correo').value
     };
-    
+
     try {
         const response = await fetch(`${API_URL}/clientes`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cliente)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
-            alert('✅ Cliente agregado exitosamente');
+            alert('Cliente agregado exitosamente');
             document.getElementById('formCliente').reset();
             cargarClientes();
         } else {
-            alert('❌ Error: ' + result.error);
+            alert('Error: ' + result.error);
         }
     } catch (error) {
         console.error('Error agregando cliente:', error);
-        alert('❌ Error al agregar cliente');
+        alert('Error al agregar cliente');
     }
 });
 
 // Agregar proveedor
 document.getElementById('formProveedor').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const proveedor = {
         nombre: document.getElementById('prov_nombre').value,
         telefono: document.getElementById('prov_telefono').value,
         correo: document.getElementById('prov_correo').value
     };
-    
+
     try {
         const response = await fetch(`${API_URL}/proveedores`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(proveedor)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
-            alert('✅ Proveedor agregado exitosamente');
+            alert('Proveedor agregado exitosamente');
             document.getElementById('formProveedor').reset();
             cargarProveedores();
+            cargarProveedoresSelect();
         } else {
-            alert('❌ Error: ' + result.error);
+            alert('Error: ' + result.error);
         }
     } catch (error) {
         console.error('Error agregando proveedor:', error);
-        alert('❌ Error al agregar proveedor');
+        alert('Error al agregar proveedor');
     }
 });
 
 // Registrar venta
 document.getElementById('formVenta').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const venta = {
         id_cliente: document.getElementById('venta_cliente').value,
         id_producto: document.getElementById('venta_producto').value,
         cantidad: parseInt(document.getElementById('venta_cantidad').value)
     };
-    
+
     // Validar que hay stock suficiente
     const productoSelect = document.getElementById('venta_producto');
     const productoSeleccionado = productoSelect.options[productoSelect.selectedIndex];
     const stockDisponible = parseInt(productoSeleccionado.dataset.stock);
-    
+
     if (venta.cantidad > stockDisponible) {
-        alert(`❌ Stock insuficiente. Solo hay ${stockDisponible} unidades disponibles.`);
+        alert(`Stock insuficiente. Solo hay ${stockDisponible} unidades disponibles.`);
         return;
     }
-    
+
     try {
         const response = await fetch(`${API_URL}/ventas`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(venta)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
-            alert(`✅ Venta registrada exitosamente. Total: $${result.total.toFixed(2)}`);
+            alert(`Venta registrada exitosamente. Total: $${result.total.toFixed(2)}`);
             document.getElementById('formVenta').reset();
             cargarVentas();
-            cargarProductos(); // Actualizar stock
-            cargarInventario(); // Actualizar inventario
+            cargarProductos();
+            cargarInventario();
         } else {
-            alert('❌ Error: ' + result.error);
+            alert('Error: ' + result.error);
         }
     } catch (error) {
         console.error('Error registrando venta:', error);
-        alert('❌ Error al registrar venta');
+        alert('Error al registrar venta');
     }
 });
 
 // ============================================
-// FUNCIÓN PARA APLICAR FILTROS EN INVENTARIO
+// FUNCION PARA APLICAR FILTROS EN INVENTARIO
 // ============================================
 
 function aplicarFiltros() {
@@ -384,7 +406,7 @@ function aplicarFiltros() {
 }
 
 // ============================================
-// NAVEGACIÓN ENTRE SECCIONES
+// NAVEGACION ENTRE SECCIONES
 // ============================================
 
 const menuItems = document.querySelectorAll('.menu-item');
@@ -400,11 +422,12 @@ menuItems.forEach(item => {
         item.classList.add('active');
         const sectionId = item.getAttribute('data-section');
         document.getElementById(sectionId).classList.add('active');
-        
-        // Cargar datos según la sección
+
+        // Cargar datos segun la seccion
         switch(sectionId) {
             case 'productos':
                 cargarProductos();
+                cargarProveedoresSelect();
                 break;
             case 'ventas':
                 cargarVentas();
@@ -425,12 +448,13 @@ menuItems.forEach(item => {
 });
 
 // ============================================
-// CARGAR DATOS INICIALES AL CARGAR LA PÁGINA
+// CARGAR DATOS INICIALES AL CARGAR LA PAGINA
 // ============================================
 
 window.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Aplicación iniciada');
+    console.log('Aplicacion iniciada');
     cargarProductos();
     cargarClientesSelect();
     cargarProductosSelect();
+    cargarProveedoresSelect();
 });

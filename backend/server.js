@@ -31,19 +31,32 @@ app.get('/api/productos', (req, res) => {
     });
 });
 
-// Crear producto
+// Crear producto CON proveedor
 app.post('/api/productos', (req, res) => {
-    const { nombre, tipo, talla, color, precio, cantidad } = req.body;
+    const { nombre, tipo, talla, color, precio, cantidad, id_proveedor } = req.body;
 
-    const query = 'INSERT INTO Producto (Nombre, ID_Tipo_Producto, ID_Talla, ID_Color, Precio, Cantidad_Stock) VALUES (?, ?, ?, ?, ?, ?)';
+    // Primero insertar el producto
+    const queryProducto = 'INSERT INTO Producto (Nombre, ID_Tipo_Producto, ID_Talla, ID_Color, Precio, Cantidad_Stock) VALUES (?, ?, ?, ?, ?, ?)';
 
-    db.query(query, [nombre, tipo, talla, color, precio, cantidad], (err, result) => {
+    db.query(queryProducto, [nombre, tipo, talla, color, precio, cantidad], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.status(201).json({
-            message: 'Producto creado exitosamente',
-            id: result.insertId
+
+        const idProducto = result.insertId;
+
+        // Luego insertar la relación con el proveedor
+        const queryRelacion = 'INSERT INTO Producto_Proveedor (ID_Producto, ID_Proveedor) VALUES (?, ?)';
+
+        db.query(queryRelacion, [idProducto, id_proveedor], (err2) => {
+            if (err2) {
+                return res.status(500).json({ error: err2.message });
+            }
+
+            res.status(201).json({
+                message: 'Producto y proveedor asociados exitosamente',
+                id: idProducto
+            });
         });
     });
 });
