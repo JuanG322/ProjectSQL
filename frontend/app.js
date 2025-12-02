@@ -4,9 +4,7 @@ const API_URL = 'http://localhost:3000/api';
 // Variable global para almacenar datos de inventario
 let inventarioCompleto = [];
 
-// ============================================
 // FUNCIONES PARA CARGAR DATOS
-// ============================================
 
 // Cargar productos en la tabla
 async function cargarProductos() {
@@ -164,9 +162,7 @@ function mostrarInventario(datos) {
     });
 }
 
-// ============================================
 // CARGAR SELECTS DINAMICAMENTE
-// ============================================
 
 // Cargar clientes en el select de ventas
 async function cargarClientesSelect() {
@@ -230,9 +226,7 @@ async function cargarProveedoresSelect() {
     }
 }
 
-// ============================================
 // FUNCIONES PARA ENVIAR FORMULARIOS
-// ============================================
 
 // Agregar producto
 document.getElementById('formProducto').addEventListener('submit', async (e) => {
@@ -381,9 +375,7 @@ document.getElementById('formVenta').addEventListener('submit', async (e) => {
     }
 });
 
-// ============================================
 // FUNCION PARA APLICAR FILTROS EN INVENTARIO
-// ============================================
 
 function aplicarFiltros() {
     const tipo = document.getElementById('filtro_tipo').value;
@@ -405,9 +397,7 @@ function aplicarFiltros() {
     mostrarInventario(datosFiltrados);
 }
 
-// ============================================
 // NAVEGACION ENTRE SECCIONES
-// ============================================
 
 const menuItems = document.querySelectorAll('.menu-item');
 const sections = document.querySelectorAll('.section');
@@ -447,9 +437,7 @@ menuItems.forEach(item => {
     });
 });
 
-// ============================================
 // CARGAR DATOS INICIALES AL CARGAR LA PAGINA
-// ============================================
 
 window.addEventListener('DOMContentLoaded', () => {
     console.log('Aplicacion iniciada');

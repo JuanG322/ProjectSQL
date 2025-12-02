@@ -5,13 +5,11 @@ const db = require('./db');
 const app = express();
 const PORT = 3000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
-// ============================================
 // RUTAS DE PRODUCTOS
-// ============================================
 
 // Obtener todos los productos
 app.get('/api/productos', (req, res) => {
@@ -90,9 +88,7 @@ app.delete('/api/productos/:id', (req, res) => {
     });
 });
 
-// ============================================
 // RUTAS DE CLIENTES
-// ============================================
 
 // Obtener todos los clientes
 app.get('/api/clientes', (req, res) => {
@@ -152,9 +148,7 @@ app.delete('/api/clientes/:id', (req, res) => {
     });
 });
 
-// ============================================
 // RUTAS DE PROVEEDORES
-// ============================================
 
 // Obtener todos los proveedores
 app.get('/api/proveedores', (req, res) => {
@@ -214,9 +208,7 @@ app.delete('/api/proveedores/:id', (req, res) => {
     });
 });
 
-// ============================================
 // RUTAS DE VENTAS
-// ============================================
 
 // Obtener todas las ventas con detalles
 app.get('/api/ventas', (req, res) => {
@@ -302,9 +294,7 @@ app.post('/api/ventas', (req, res) => {
     });
 });
 
-// ============================================
 // RUTAS DE INVENTARIO
-// ============================================
 
 // Obtener inventario actual
 app.get('/api/inventario', (req, res) => {
@@ -332,9 +322,7 @@ app.get('/api/inventario', (req, res) => {
     });
 });
 
-// ============================================
 // RUTAS AUXILIARES (para llenar selects)
-// ============================================
 
 app.get('/api/tipos', (req, res) => {
     db.query('SELECT * FROM Tipo_Producto', (err, results) => {
@@ -357,9 +345,7 @@ app.get('/api/colores', (req, res) => {
     });
 });
 
-// ============================================
 // INICIAR SERVIDOR
-// ============================================
 
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
