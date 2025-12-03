@@ -140,14 +140,7 @@ function mostrarInventario(datos) {
     datos.forEach(item => {
         const tr = document.createElement('tr');
 
-        let estadoBadge = '';
-        if (item.Estado === 'Bajo') {
-            estadoBadge = '<span class="badge badge-bajo">Bajo</span>';
-        } else if (item.Estado === 'Medio') {
-            estadoBadge = '<span class="badge badge-medio">Medio</span>';
-        } else {
-            estadoBadge = '<span class="badge badge-suficiente">Suficiente</span>';
-        }
+        /* SE ELIMINA LA LOGICA DEL BADGE DE ESTADO */
 
         tr.innerHTML = `
             <td>${item.ID_Producto}</td>
@@ -156,8 +149,7 @@ function mostrarInventario(datos) {
             <td>${item.Talla}</td>
             <td>${item.Color}</td>
             <td>${item.Cantidad_Stock}</td>
-            <td>${estadoBadge}</td>
-        `;
+            <td>N/A</td> `;
         tbody.appendChild(tr);
     });
 }

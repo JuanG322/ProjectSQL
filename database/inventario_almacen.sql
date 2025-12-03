@@ -1,26 +1,22 @@
--- Crear base de datos
+
 CREATE DATABASE IF NOT EXISTS inventario_almacen;
 USE inventario_almacen;
 
--- Tabla Tipo_Producto
 CREATE TABLE Tipo_Producto (
                                ID_Tipo_Producto INT AUTO_INCREMENT PRIMARY KEY,
                                Descripcion VARCHAR(50) NOT NULL
 );
 
--- Tabla Talla
 CREATE TABLE Talla (
                        ID_Talla INT AUTO_INCREMENT PRIMARY KEY,
                        Descripcion_Talla VARCHAR(10) NOT NULL
 );
 
--- Tabla Color
 CREATE TABLE Color (
                        ID_Color INT AUTO_INCREMENT PRIMARY KEY,
                        Nombre_Color VARCHAR(30) NOT NULL
 );
 
--- Tabla Producto (con Cantidad_Stock incluido)
 CREATE TABLE Producto (
                           ID_Producto INT AUTO_INCREMENT PRIMARY KEY,
                           Nombre VARCHAR(100) NOT NULL,
@@ -34,7 +30,6 @@ CREATE TABLE Producto (
                           FOREIGN KEY (ID_Color) REFERENCES Color(ID_Color)
 );
 
--- Tabla Proveedor
 CREATE TABLE Proveedor (
                            ID_Proveedor INT AUTO_INCREMENT PRIMARY KEY,
                            Nombre VARCHAR(100) NOT NULL,
@@ -42,7 +37,6 @@ CREATE TABLE Proveedor (
                            Correo VARCHAR(100)
 );
 
--- Tabla intermedia Producto_Proveedor
 CREATE TABLE Producto_Proveedor (
                                     ID_Producto INT,
                                     ID_Proveedor INT,
@@ -51,7 +45,6 @@ CREATE TABLE Producto_Proveedor (
                                     FOREIGN KEY (ID_Proveedor) REFERENCES Proveedor(ID_Proveedor)
 );
 
--- Tabla Cliente
 CREATE TABLE Cliente (
                          ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
                          Nombre VARCHAR(100) NOT NULL,
@@ -60,7 +53,6 @@ CREATE TABLE Cliente (
                          Correo VARCHAR(100)
 );
 
--- Tabla Venta
 CREATE TABLE Venta (
                        ID_Venta INT AUTO_INCREMENT PRIMARY KEY,
                        Fecha_Venta DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -68,7 +60,6 @@ CREATE TABLE Venta (
                        FOREIGN KEY (ID_Cliente) REFERENCES Cliente(ID_Cliente)
 );
 
--- Tabla Detalle_Venta
 CREATE TABLE Detalle_Venta (
                                ID_Detalle INT AUTO_INCREMENT PRIMARY KEY,
                                ID_Venta INT NOT NULL,
@@ -80,7 +71,6 @@ CREATE TABLE Detalle_Venta (
                                FOREIGN KEY (ID_Producto) REFERENCES Producto(ID_Producto)
 );
 
--- Insertar datos iniciales en tablas auxiliares
 INSERT INTO Tipo_Producto (Descripcion) VALUES
                                             ('Chaqueta'),
                                             ('Pantalón'),

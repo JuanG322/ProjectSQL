@@ -9,18 +9,19 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// RUTAS DE PRODUCTOS
+// Productos
 
 // Obtener todos los productos
 app.get('/api/productos', (req, res) => {
+    // Se hace un join
     const query = `
-    SELECT p.*, tp.Descripcion as Tipo, t.Descripcion_Talla as Talla, c.Nombre_Color as Color
-    FROM Producto p
-    JOIN Tipo_Producto tp ON p.ID_Tipo_Producto = tp.ID_Tipo_Producto
-    JOIN Talla t ON p.ID_Talla = t.ID_Talla
-    JOIN Color c ON p.ID_Color = c.ID_Color
-  `;
-
+        SELECT p.*, tp.Descripcion as Tipo, t.Descripcion_Talla as Talla, c.Nombre_Color as Color
+        FROM Producto p
+                 JOIN Tipo_Producto tp ON p.ID_Tipo_Producto = tp.ID_Tipo_Producto
+                 JOIN Talla t ON p.ID_Talla = t.ID_Talla
+                 JOIN Color c ON p.ID_Color = c.ID_Color
+    `;
+// Ejecuta la consulta en SQL
     db.query(query, (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -29,11 +30,11 @@ app.get('/api/productos', (req, res) => {
     });
 });
 
-// Crear producto CON proveedor
+// Compra de productos
 app.post('/api/productos', (req, res) => {
     const { nombre, tipo, talla, color, precio, cantidad, id_proveedor } = req.body;
 
-    // Primero insertar el producto
+    // Se insertar el producto (? es un placeholder)
     const queryProducto = 'INSERT INTO Producto (Nombre, ID_Tipo_Producto, ID_Talla, ID_Color, Precio, Cantidad_Stock) VALUES (?, ?, ?, ?, ?, ?)';
 
     db.query(queryProducto, [nombre, tipo, talla, color, precio, cantidad], (err, result) => {
@@ -50,11 +51,11 @@ app.post('/api/productos', (req, res) => {
             if (err2) {
                 return res.status(500).json({ error: err2.message });
             }
-
-            res.status(201).json({
-                message: 'Producto y proveedor asociados exitosamente',
-                id: idProducto
-            });
+            // El mensaje de agregado con exito
+            /* res.status(201).json({
+                 message: 'Producto y proveedor asociados exitosamente',
+                 id: idProducto
+             });*/
         });
     });
 });
@@ -70,7 +71,7 @@ app.put('/api/productos/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Producto actualizado exitosamente' });
+        //res.json({ message: 'Producto actualizado exitosamente' });
     });
 });
 
@@ -88,7 +89,7 @@ app.delete('/api/productos/:id', (req, res) => {
     });
 });
 
-// RUTAS DE CLIENTES
+// Clientes
 
 // Obtener todos los clientes
 app.get('/api/clientes', (req, res) => {
@@ -113,7 +114,7 @@ app.post('/api/clientes', (req, res) => {
             return res.status(500).json({ error: err.message });
         }
         res.status(201).json({
-            message: 'Cliente creado exitosamente',
+            //message: 'Cliente creado exitosamente',
             id: result.insertId
         });
     });
@@ -130,7 +131,7 @@ app.put('/api/clientes/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Cliente actualizado exitosamente' });
+        //res.json({ message: 'Cliente actualizado exitosamente' });
     });
 });
 
@@ -144,11 +145,11 @@ app.delete('/api/clientes/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Cliente eliminado exitosamente' });
+        //res.json({ message: 'Cliente eliminado exitosamente' });
     });
 });
 
-// RUTAS DE PROVEEDORES
+//Provedors
 
 // Obtener todos los proveedores
 app.get('/api/proveedores', (req, res) => {
@@ -173,7 +174,7 @@ app.post('/api/proveedores', (req, res) => {
             return res.status(500).json({ error: err.message });
         }
         res.status(201).json({
-            message: 'Proveedor creado exitosamente',
+            //message: 'Proveedor creado exitosamente',
             id: result.insertId
         });
     });
@@ -190,7 +191,7 @@ app.put('/api/proveedores/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Proveedor actualizado exitosamente' });
+        //res.json({ message: 'Proveedor actualizado exitosamente' });
     });
 });
 
@@ -204,23 +205,23 @@ app.delete('/api/proveedores/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Proveedor eliminado exitosamente' });
+        //res.json({ message: 'Proveedor eliminado exitosamente' });
     });
 });
 
-// RUTAS DE VENTAS
+// Ventas
 
 // Obtener todas las ventas con detalles
 app.get('/api/ventas', (req, res) => {
     const query = `
-    SELECT v.ID_Venta, v.Fecha_Venta, c.Nombre as Cliente,
-           p.Nombre as Producto, dv.Cantidad_Vendida, dv.Total_Detalle
-    FROM Venta v
-    JOIN Cliente c ON v.ID_Cliente = c.ID_Cliente
-    JOIN Detalle_Venta dv ON v.ID_Venta = dv.ID_Venta
-    JOIN Producto p ON dv.ID_Producto = p.ID_Producto
-    ORDER BY v.Fecha_Venta DESC
-  `;
+        SELECT v.ID_Venta, v.Fecha_Venta, c.Nombre as Cliente,
+               p.Nombre as Producto, dv.Cantidad_Vendida, dv.Total_Detalle
+        FROM Venta v
+                 JOIN Cliente c ON v.ID_Cliente = c.ID_Cliente
+                 JOIN Detalle_Venta dv ON v.ID_Venta = dv.ID_Venta
+                 JOIN Producto p ON dv.ID_Producto = p.ID_Producto
+        ORDER BY v.Fecha_Venta DESC
+    `;
 
     db.query(query, (err, results) => {
         if (err) {
@@ -282,7 +283,7 @@ app.post('/api/ventas', (req, res) => {
                             }
 
                             res.status(201).json({
-                                message: 'Venta registrada exitosamente',
+                                //message: 'Venta registrada exitosamente',
                                 id_venta: idVenta,
                                 total: total
                             });
@@ -294,25 +295,20 @@ app.post('/api/ventas', (req, res) => {
     });
 });
 
-// RUTAS DE INVENTARIO
+//Inventario
 
 // Obtener inventario actual
 app.get('/api/inventario', (req, res) => {
     const query = `
-    SELECT p.ID_Producto, p.Nombre, tp.Descripcion as Tipo, 
-           t.Descripcion_Talla as Talla, c.Nombre_Color as Color, 
-           p.Cantidad_Stock,
-           CASE 
-             WHEN p.Cantidad_Stock < 5 THEN 'Bajo'
-             WHEN p.Cantidad_Stock < 20 THEN 'Medio'
-             ELSE 'Suficiente'
-           END as Estado
-    FROM Producto p
-    JOIN Tipo_Producto tp ON p.ID_Tipo_Producto = tp.ID_Tipo_Producto
-    JOIN Talla t ON p.ID_Talla = t.ID_Talla
-    JOIN Color c ON p.ID_Color = c.ID_Color
-    ORDER BY p.Cantidad_Stock ASC
-  `;
+        SELECT p.ID_Producto, p.Nombre, tp.Descripcion as Tipo,
+               t.Descripcion_Talla as Talla, c.Nombre_Color as Color,
+               p.Cantidad_Stock /* <-- Se elimina la logica del CASE 'Estado' */
+        FROM Producto p
+                 JOIN Tipo_Producto tp ON p.ID_Tipo_Producto = tp.ID_Tipo_Producto
+                 JOIN Talla t ON p.ID_Talla = t.ID_Talla
+                 JOIN Color c ON p.ID_Color = c.ID_Color
+        ORDER BY p.Cantidad_Stock ASC
+    `;
 
     db.query(query, (err, results) => {
         if (err) {
@@ -322,7 +318,7 @@ app.get('/api/inventario', (req, res) => {
     });
 });
 
-// RUTAS AUXILIARES (para llenar selects)
+// Opciones de los dropdowns
 
 app.get('/api/tipos', (req, res) => {
     db.query('SELECT * FROM Tipo_Producto', (err, results) => {
