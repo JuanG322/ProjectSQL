@@ -20,6 +20,7 @@ app.get('/api/productos', (req, res) => {
                  JOIN Tipo_Producto tp ON p.ID_Tipo_Producto = tp.ID_Tipo_Producto
                  JOIN Talla t ON p.ID_Talla = t.ID_Talla
                  JOIN Color c ON p.ID_Color = c.ID_Color
+        WHERE p.Cantidad_Stock > 0
     `;
 // Ejecuta la consulta en SQL
     db.query(query, (err, results) => {
@@ -52,10 +53,10 @@ app.post('/api/productos', (req, res) => {
                 return res.status(500).json({ error: err2.message });
             }
             // El mensaje de agregado con exito
-            /* res.status(201).json({
+            res.status(201).json({
                  message: 'Producto y proveedor asociados exitosamente',
                  id: idProducto
-             });*/
+             });
         });
     });
 });
@@ -71,7 +72,7 @@ app.put('/api/productos/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        //res.json({ message: 'Producto actualizado exitosamente' });
+        res.json({ message: 'Producto actualizado exitosamente' });
     });
 });
 
@@ -114,7 +115,7 @@ app.post('/api/clientes', (req, res) => {
             return res.status(500).json({ error: err.message });
         }
         res.status(201).json({
-            //message: 'Cliente creado exitosamente',
+            message: 'Cliente creado exitosamente',
             id: result.insertId
         });
     });
@@ -131,7 +132,7 @@ app.put('/api/clientes/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        //res.json({ message: 'Cliente actualizado exitosamente' });
+        res.json({ message: 'Cliente actualizado exitosamente' });
     });
 });
 
@@ -145,7 +146,7 @@ app.delete('/api/clientes/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        //res.json({ message: 'Cliente eliminado exitosamente' });
+        res.json({ message: 'Cliente eliminado exitosamente' });
     });
 });
 
@@ -174,7 +175,7 @@ app.post('/api/proveedores', (req, res) => {
             return res.status(500).json({ error: err.message });
         }
         res.status(201).json({
-            //message: 'Proveedor creado exitosamente',
+            message: 'Proveedor creado exitosamente',
             id: result.insertId
         });
     });
@@ -191,7 +192,7 @@ app.put('/api/proveedores/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        //res.json({ message: 'Proveedor actualizado exitosamente' });
+        res.json({ message: 'Proveedor actualizado exitosamente' });
     });
 });
 
@@ -205,7 +206,7 @@ app.delete('/api/proveedores/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        //res.json({ message: 'Proveedor eliminado exitosamente' });
+        res.json({ message: 'Proveedor eliminado exitosamente' });
     });
 });
 
@@ -283,7 +284,7 @@ app.post('/api/ventas', (req, res) => {
                             }
 
                             res.status(201).json({
-                                //message: 'Venta registrada exitosamente',
+                                message: 'Venta registrada exitosamente',
                                 id_venta: idVenta,
                                 total: total
                             });
@@ -302,11 +303,12 @@ app.get('/api/inventario', (req, res) => {
     const query = `
         SELECT p.ID_Producto, p.Nombre, tp.Descripcion as Tipo,
                t.Descripcion_Talla as Talla, c.Nombre_Color as Color,
-               p.Cantidad_Stock /* <-- Se elimina la logica del CASE 'Estado' */
+               p.Cantidad_Stock
         FROM Producto p
                  JOIN Tipo_Producto tp ON p.ID_Tipo_Producto = tp.ID_Tipo_Producto
                  JOIN Talla t ON p.ID_Talla = t.ID_Talla
                  JOIN Color c ON p.ID_Color = c.ID_Color
+        WHERE p.Cantidad_Stock > 0
         ORDER BY p.Cantidad_Stock ASC
     `;
 

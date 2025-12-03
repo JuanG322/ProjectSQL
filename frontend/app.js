@@ -148,8 +148,7 @@ function mostrarInventario(datos) {
             <td>${item.Tipo}</td>
             <td>${item.Talla}</td>
             <td>${item.Color}</td>
-            <td>${item.Cantidad_Stock}</td>
-            <td>N/A</td> `;
+            <td>${item.Cantidad_Stock}</td>`;
         tbody.appendChild(tr);
     });
 }
